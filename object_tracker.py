@@ -29,7 +29,6 @@ flags.DEFINE_string('output', None, 'path to output video')
 flags.DEFINE_string('output_format', 'XVID', 'codec used in VideoWriter when saving video to file')
 flags.DEFINE_integer('num_classes', 80, 'number of classes in the model')
 
-
 def main(_argv):
     # Definition of the parameters
     max_cosine_distance = 0.5
@@ -58,15 +57,30 @@ def main(_argv):
     logging.info('classes loaded')
 
     try:
-        vid = cv2.VideoCapture('rtsp://172.20.10.4:8554/test')
-        #vid = cv2.VideoCapture('rtsp://192.168.0.28:8554/test')
+        #원래 코드
+        #vid = cv2.VideoCapture(int(FLAGS.video))
+        #다음 팟플레이어
+        #vid = cv2.VideoCapture('rtsp://172.20.10.4:8554/test')
+        vid = cv2.VideoCapture('rtsp://192.168.0.28:8554/test')
+
+        #연결x
+        #os.environ['OPENCV_FFMPEG_CAPTURE_OPTIONS'] = 'protocol_whitelist;file,rtp,udp'
+        #vid = cv2.VideoCapture('C:/Users/Jiwon/Desktop/yolov3_deepsort-master/stream.sdp')
+        #vid = cv2.VideoCapture(
+            #'udpsrc port=8400 caps=application/x-rtp,media=(string)video,clock-rate=(int)9000,encoding-name=(string)H264,payload=(int)96!rtph264depay!decodebin!videoconvert!appsink',
+            #cv2.CAP_GSTREAMER)
+        #vid = cv2.VideoCapture("rtspsrc location=rtsp://192.168.0.25/main latency=30 ! decodebin ! nvvidconv ! appsink")
+        #vid = cv2.VideoCapture('udp://@:5000')
+        #vid =  cv2.VideoCapture('udpsrc port=5000 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! appsink', cv2.CAP_GSTREAMER)
+        #vid = cv2.VideoCapture(1)
+
     except:
         vid = cv2.VideoCapture(FLAGS.video)
 
     out = None
 
     if FLAGS.output:
-        # by default VideoCapture returns float instead of int
+        # by default VideoCapture returns float instead of qint
         width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = int(vid.get(cv2.CAP_PROP_FPS))
@@ -74,6 +88,9 @@ def main(_argv):
         out = cv2.VideoWriter(FLAGS.output, codec, fps, (width, height))
         list_file = open('detection.txt', 'w')
         frame_index = -1 
+    #확인을 위한 코드
+    f_cnt = 0
+    redetect = False
     
     fps = 0.0
     count = 0 
@@ -123,27 +140,31 @@ def main(_argv):
 
         for track in tracker.tracks:
             if not track.is_confirmed() or track.time_since_update > 1:
-                continue 
+                continue
             bbox = track.to_tlbr()
             class_name = track.get_class()
 
             if class_name == "person" :
                 if int(track.track_id) == 1 :
-                    color = colors[int(track.track_id) % len(colors)]
-                    color = [i * 255 for i in color]
-                    cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), color, 2)
-                    cv2.rectangle(img, (int(bbox[0]), int(bbox[1]-30)), (int(bbox[0])+(len(class_name)+len(str(track.track_id)))*17, int(bbox[1])), color, -1)
-                    cv2.putText(img, class_name + "-" + str(track.track_id),(int(bbox[0]), int(bbox[1]-10)),0, 0.75, (255,255,255),2)
-            
+                    cv2.rectangle(img, (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])), (0,255,0), 2)
+                    cv2.rectangle(img, (int(bbox[0]), int(bbox[1]-30)), (int(bbox[0])+(len(class_name)+len(str(track.track_id)))*17, int(bbox[1])), (0,255,0), -1)
+                    cv2.putText(img, class_name + "-" + str(track.track_id),(int(bbox[0]), int(bbox[1]-10)),0, 0.75, (0,0,0),2)
+
+                    #if(MQTT초기 확인 값이면 저장)k 여기 코드 수정하셈
+                    #img_user = img[int(bbox[0]):int(bbox[2]), int(bbox[1]):int(bbox[3])]
+                    img_user = img[int(bbox[1]):int(bbox[1])+int(bbox[3]),int(bbox[0]):int(bbox[0])+int(bbox[2])-10]
+                    cv2.imwrite('C:/Users/Jiwon/Desktop/re/yolov3_deepsort-master/userface/user.png', img_user)
+
         ### UNCOMMENT BELOW IF YOU WANT CONSTANTLY CHANGING YOLO DETECTIONS TO BE SHOWN ON SCREEN
         #for det in detections:
-        #    bbox = det.to_tlbr() 
+        #    bbox = det.to_tlbr()
         #    cv2.rectangle(img,(int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3])),(255,0,0), 2)
-        
-        # print fps on screen 
+
+        # print fps on screen
         fps  = ( fps + (1./(time.time()-t1)) ) / 2
         cv2.putText(img, "FPS: {:.2f}".format(fps), (0, 30),
                           cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 255), 2)
+
         cv2.imshow('output', img)
         if FLAGS.output:
             out.write(img)
@@ -154,6 +175,25 @@ def main(_argv):
                     list_file.write(str(converted_boxes[i][0]) + ' '+str(converted_boxes[i][1]) + ' '+str(converted_boxes[i][2]) + ' '+str(converted_boxes[i][3]) + ' ')
             list_file.write('\n')
 
+        f_cnt += 1
+        print("False")
+        if f_cnt > 10:
+            redetect = True
+            f_cnt = 0
+        #"""
+        if redetect: # https://opencv-python.readthedocs.io/en/latest/doc/24.imageTemplateMatch/imageTemplateMatch.html
+            _, img = vid.read()
+            gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+            template = cv2.imread('C:/Users/Jiwon/Desktop/re/yolov3_deepsort-master/userface/user.png',0)
+            w,h = template.shape[::1] #template 이미지의 가로와 세로
+
+            res = cv2.matchTemplate(gray, template, cv2.TM_SQDIFF)
+            min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+            top_left = min_loc
+            bottom_right = (top_left[0]+w, top_left[1]+h)
+            cv2.rectangle(img, top_left, bottom_right, (255,0,0),1)
+            print("TRUE")
+         #   """
         # press q to quit
         if cv2.waitKey(1) == ord('q'):
             break
