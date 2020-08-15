@@ -1,4 +1,4 @@
-# dir1 : 23, dir2 : 22, pwm1 : 18, pwm2 : 17, gnd : gnd
+# dir1 right : 23, dir2 : 22, pwm1 right : 18, pwm2 : 17, gnd : gnd
 # 1 -> rightMotor, 2-> leftMotor
 # 모터 핀 설정 및 모터 구동을 위한 함수들 정의
 import RPi.GPIO as io

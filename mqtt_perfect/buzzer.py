@@ -25,7 +25,7 @@ def on_message(client, userdata, msg):
     print("Topic: ", msg.topic + '\nMessage: ' + str(msg.payload))
     p.stop()  # 내던 소리는 일단 멈춤
     print(str(msg.payload))
-    if str(msg.payload) == "b'on'":  # on 메시지를 받는 경우
+    if str(msg.payload) == "on":  # on 메시지를 받는 경우
         p.start(50)  # 소리를 냄
         p.ChangeFrequency(scale[num])
         time.sleep(0.5)  # 소리 사이의 간격

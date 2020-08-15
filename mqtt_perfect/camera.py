@@ -12,6 +12,7 @@ try:
         tmp = randint(0, 2) # 부저 조정
         if tmp == 0:  # 부저를 울리는 경우
             msg = "on"
+            break
         else:  # 부저를 울리지 않는 경우
             msg = "off"
         mqttc.publish("buzzer", msg)
