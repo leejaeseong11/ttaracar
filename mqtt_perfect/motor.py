@@ -7,7 +7,8 @@ import mdd10a as HBridge
 
 speedleft = 0
 speedright = 0
-
+small = 0.1 # 우회전/좌회전 수치 조정 0~1
+big = 0.3 # 큰우회전/큰좌회전 수치 조정 0~1
 # mqtt connect
 def on_connect(client, userdata, flags, rc):
     print ("Connected with result coe " + str(rc))
@@ -40,29 +41,47 @@ def on_message(client, userdata, msg):
             speedright = -1
         HBridge.setMotorLeft(speedleft)
         HBridge.setMotorRight(speedright)
-    elif(char == "b'stop'"):  # 정지, 양쪽 모터 속도0
+    elif(char == "b'stop'"):  # 정지, 양쪽 모터 속도 0
         if(speedleft < 0 and speedright < 0):  # 후진 중 장애물
             speedleft = 0  
             speedright = 0  
             HBridge.setMotorLeft(speedleft)  
             HBridge.setMotorRight(speedright)
-    elif(char == "b'right'"):  # 우회전, 왼쪽 모터+ 오른쪽 모터-
-        speedright = speedright - 0.1
-        speedleft = speedleft + 0.1
+    elif(char == "right"):  # 우회전, 왼쪽 모터+ 오른쪽 모터-
+        speedright = speedright - small
+        speedleft = speedleft + small
         if speedright < -1:  
             speedright = -1
         if speedleft > 1:
             speedleft = 1
         HBridge.setMotorLeft(speedleft)
         HBridge.setMotorRight(speedright)
-    elif(char == "b'left'"):  # 좌회전, 왼쪽 모터- 오른쪽 모터+
-        speedleft = speedleft - 0.1  
-        speedright = speedright + 0.1
+    elif(char == "left"):  # 좌회전, 왼쪽 모터- 오른쪽 모터+
+        speedleft = speedleft - small
+        speedright = speedright + small
         if speedleft < -1:  
             speedleft = -1  
         if speedright > 1:  
             speedright = 1  
         HBridge.setMotorLeft(speedleft)  
+        HBridge.setMotorRight(speedright)
+    elif (char == "big_right'"):  # 큰우회전, 왼쪽 모터+ 오른쪽 모터-
+        speedright = speedright - big
+        speedleft = speedleft + big
+        if speedright < -1:
+            speedright = -1
+        if speedleft > 1:
+            speedleft = 1
+        HBridge.setMotorLeft(speedleft)
+        HBridge.setMotorRight(speedright)
+    elif (char == "big_left"):  # 큰좌회전, 왼쪽 모터- 오른쪽 모터+
+        speedleft = speedleft - big
+        speedright = speedright + big
+        if speedleft < -1:
+            speedleft = -1
+        if speedright > 1:
+            speedright = 1
+        HBridge.setMotorLeft(speedleft)
         HBridge.setMotorRight(speedright)
 
 client = mqtt.Client()  # MQTT Client 오브젝트 생성
