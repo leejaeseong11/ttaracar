@@ -47,7 +47,7 @@ def on_message(client, userdata, msg):
             speedright = 0  
             HBridge.setMotorLeft(speedleft)  
             HBridge.setMotorRight(speedright)
-    elif(char == "right"):  # 우회전, 왼쪽 모터+ 오른쪽 모터-
+    elif(char == "b'right'"):  # 우회전, 왼쪽 모터+ 오른쪽 모터-
         speedright = speedright - small
         speedleft = speedleft + small
         if speedright < -1:  
@@ -56,7 +56,7 @@ def on_message(client, userdata, msg):
             speedleft = 1
         HBridge.setMotorLeft(speedleft)
         HBridge.setMotorRight(speedright)
-    elif(char == "left"):  # 좌회전, 왼쪽 모터- 오른쪽 모터+
+    elif(char == "b'left'"):  # 좌회전, 왼쪽 모터- 오른쪽 모터+
         speedleft = speedleft - small
         speedright = speedright + small
         if speedleft < -1:  
@@ -65,7 +65,7 @@ def on_message(client, userdata, msg):
             speedright = 1  
         HBridge.setMotorLeft(speedleft)  
         HBridge.setMotorRight(speedright)
-    elif (char == "big_right'"):  # 큰우회전, 왼쪽 모터+ 오른쪽 모터-
+    elif (char == "b'big_right'"):  # 큰우회전, 왼쪽 모터+ 오른쪽 모터-
         speedright = speedright - big
         speedleft = speedleft + big
         if speedright < -1:
@@ -74,7 +74,7 @@ def on_message(client, userdata, msg):
             speedleft = 1
         HBridge.setMotorLeft(speedleft)
         HBridge.setMotorRight(speedright)
-    elif (char == "big_left"):  # 큰좌회전, 왼쪽 모터- 오른쪽 모터+
+    elif (char == "b'big_left'"):  # 큰좌회전, 왼쪽 모터- 오른쪽 모터+
         speedleft = speedleft - big
         speedright = speedright + big
         if speedleft < -1:
