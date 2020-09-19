@@ -6,10 +6,10 @@ import sys, tty, termios, os
 import mdd10a as HBridge
 import time
 
-lr_small = 0.45 # 우회전/좌회전 수치 조정 0~1
-big_go = 0.6
-small_go = 0.55
-back = 0.3
+lr_small = 0.55
+big_go = 1
+small_go = 0.8
+back = 0.6
 
 speedleft = 0.0
 speedright = 0.0
@@ -24,7 +24,6 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("motor_camera")  # 카메라
     client.subscribe("mode")
     client.subscribe("buzzer")
-    client.subscribe("motor_front")
 
     # receive message
 def on_message(client, userdata, msg):
@@ -65,24 +64,23 @@ def on_message(client, userdata, msg):
                 speedleft = -small_go
                 speedright = -small_go
             elif direction == b'left':
-                speedleft = -lr_small * 1.6
+                speedleft = -lr_small * 1.65
                 speedright = -lr_small
             elif direction == b'right':
                 speedleft = -lr_small 
-                speedright = -lr_small * 1.6
+                speedright = -lr_small * 1.65
             elif direction == b'big_left':
-                speedleft = -lr_small * 1.65
+                speedleft = -lr_small * 1.8
                 speedright = -lr_small
             elif direction == b'big_right':
                 speedleft = -lr_small 
-                speedright = -lr_small * 1.65
+                speedright = -lr_small * 1.8
             elif direction == b'back':
                 speedleft = back
                 speedright = back
             elif direction == b'wrong':
-                speedleft = speedleft / 10
-                speedright = speedright / 10
-                
+                speedleft = speedleft / 5
+                speedright = speedright / 5
                 
             if speedleft < -1:  
                 speedleft = -1
@@ -118,9 +116,9 @@ def test():
     global action,rear, direction, speedleft, speedright, go_back
     #speedleft -= 0.25
     #speedright -= 0.2675
-    speedleft -= 0.8
+    speedleft -= 1
     print(speedleft)
-    speedright -= 0.8
+    speedright -= 1
     print(speedright)
 
     if speedleft < -1:  

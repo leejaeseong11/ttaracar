@@ -30,9 +30,9 @@ def on_message(client, userdata, msg):
             HBridge.setMotorRight(0)
             
         elif(char == "b'auto mode'" or char == "b'linear start'"):  # 자동모드, 양쪽 모터 속도-
-            HBridge.setMotorLeft(1)
+            HBridge.setMotorLeft(0.9)
             HBridge.setMotorRight(1)
-            time.sleep(1.7)
+            time.sleep(2.3)
             HBridge.setMotorLeft(0)
             HBridge.setMotorRight(0)
             
@@ -56,9 +56,9 @@ def client():
     client.loop_forever()
 
 def down():
-    HBridge.setMotorLeft(1)
+    HBridge.setMotorLeft(0.9)
     HBridge.setMotorRight(1)
-    time.sleep(1.6)
+    time.sleep(2.3)
     HBridge.setMotorRight(0)
     HBridge.setMotorLeft(0)
 
@@ -69,6 +69,6 @@ def up():
     HBridge.setMotorLeft(0)
     HBridge.setMotorRight(0)
 
-#client()
-up()
+client()
+#up()
 #down()

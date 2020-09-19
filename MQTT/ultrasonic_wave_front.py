@@ -15,6 +15,7 @@ mqttc.connect('localhost', 1883)    # MQTT 서버에 연결
 print ('Press SW or input Ctrl+C to quit')   # 메세지 화면 출력
 
 try:
+    distance = 0
     while True:
         GPIO.output(23, False)        
         time.sleep(0.5)
@@ -30,15 +31,22 @@ try:
             stop = time.time()
 
         time_interval = stop - start  # 초음파가 수신되는 시간으로 거리를 계산
-        distance = time_interval * 17000
-        distance = round(distance, 2)
-
+        
+        if distance == 0:
+            distance = time_interval * 17000
+            distance = round(distance, 2)
+        else:
+            later_distance = time_interval * 17000
+            later_distance = round(later_distance, 2)
+            
+            if later_distance - distance <= 50:
+                distance = later_distance
 
         if distance < 10:  # ?cm 보다 가까우면 모터에게 back, ?cm 보다 멀면 모터에게 go, 그 사이이면 ok
             msg = "back"
         elif distance > 1000:
             msg = "wrong"
-        elif distance > 180:
+        elif distance > 150:
             msg = "big_go"
         elif distance > 45:
             msg = "small_go"
