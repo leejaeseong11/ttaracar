@@ -17,6 +17,7 @@ Broker는 이들을 중계하는 역할을 하며, 단일 Topic에 여러 Subscr
 - 초음파 센서 관련
   - ultrasonic_wave_front.py: 카트 앞 거리 측정
   - ultrasonic_wave_back.py: 카트 뒤 거리 측정
+  - ultrasonic_wave_object.py: 카트 앞 하단 장애물 감지
 
 ## OpenCV 및 YOLOv3 (tensorflow)
 
