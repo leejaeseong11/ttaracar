@@ -20,7 +20,7 @@ Broker는 이들을 중계하는 역할을 하며, 단일 Topic에 여러 Subscr
   - ultrasonic_wave_back.py: 카트 뒤 거리 측정
   - ultrasonic_wave_object.py: 카트 앞 하단 장애물 감지
 
-## OpenCV 및 YOLOv3 (tensorflow)
+## OpenCV 및 YOLO (tensorflow)
 
 - detect_video.py: 연결된 카메라로부터 YOLO를 이용해 사람을 인식하여 이미지를 저장
 - object_tracker.py
